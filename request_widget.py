@@ -26,7 +26,7 @@ class RequestWidget(QtWidgets.QDialog):
     def __init__(self, headline, family_name_init='', name_init='', surname_init='',
                  date_request_init=QtCore.QDate.currentDate(),
                  time_request_init=QtCore.QTime.currentTime(),
-                 reason_init='', parent=None):
+                 reason_init='', save_button_enabled=True, parent=None):
         super().__init__(parent)
         self.setWindowTitle(headline)
         self.setWindowIcon(QtGui.QIcon('logo_era.png'))
@@ -53,6 +53,7 @@ class RequestWidget(QtWidgets.QDialog):
         self.text_reason.setText(reason_init)
 
         btn_save_request = QtWidgets.QPushButton('Сохранить')
+        btn_save_request.setEnabled(save_button_enabled)
         btn_cancel_request = QtWidgets.QPushButton('Отмена')
 
         btn_save_request.clicked.connect(self._btn_save_request_clicked)

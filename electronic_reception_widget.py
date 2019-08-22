@@ -1,5 +1,6 @@
 from PyQt5 import QtWidgets, QtCore, QtSql
 from request_widget import RequestWidget
+from TableView import TableView
 
 
 class ElectronicReceptionWidget(QtWidgets.QWidget):
@@ -15,6 +16,8 @@ class ElectronicReceptionWidget(QtWidgets.QWidget):
         record.setValue('family_name', request_family_name)
         record.setValue('name', request_name)
         record.setValue('surname', request_surname)
+        # set seconds to 00
+        request_time.setHMS(request_time.hour(), request_time.minute(), 0)
         date_time = QtCore.QDateTime(request_date, request_time)
         record.setValue('date_time', date_time.toString('dd-MM-yyyy HH:mm:ss'))
         record.setValue('reason', request_reason)
@@ -35,7 +38,7 @@ class ElectronicReceptionWidget(QtWidgets.QWidget):
     def _btn_remove_request_clicked(self):
         self.remove_request(self.table_current_requests)
 
-    def show_request(self, headline, table, selected_cell):
+    def show_request(self, headline, table, selected_cell, save_button_enabled=True):
         family_name_index = table.model().createIndex(selected_cell.row(), 1)
         name_index = table.model().createIndex(selected_cell.row(), 2)
         surname_index = table.model().createIndex(selected_cell.row(), 3)
@@ -51,7 +54,8 @@ class ElectronicReceptionWidget(QtWidgets.QWidget):
         reason_init = table.model().data(reason_index)
 
         request_widget = RequestWidget(headline, family_name_init, name_init, surname_init,
-                                       date_time_init.date(), date_time_init.time(), reason_init)
+                                       date_time_init.date(), date_time_init.time(),
+                                       reason_init, save_button_enabled)
         request_widget.signal_save_request.connect(slot=self.slot_request_edit)
         request_widget.exec()
 
@@ -72,7 +76,7 @@ class ElectronicReceptionWidget(QtWidgets.QWidget):
         surname_index = self.table_current_requests.model().createIndex(selected_cell.row(), 3)
         date_time_index = self.table_current_requests.model().createIndex(selected_cell.row(), 4)
         reason_index = self.table_current_requests.model().createIndex(selected_cell.row(), 5)
-
+        request_time.setHMS(request_time.hour(), request_time.minute(), 0)
         date_time = QtCore.QDateTime(request_date, request_time)
         self.table_current_requests.model().setData(family_name_index, request_family_name)
         self.table_current_requests.model().setData(name_index, request_name)
@@ -98,10 +102,10 @@ class ElectronicReceptionWidget(QtWidgets.QWidget):
         self._btn_remove_request_clicked()
 
     def _table_current_requests_double_clicked(self, index):
-        self.show_request('Просмотр задачи', self.table_current_requests, index)
+        self.show_request('Просмотр заявки', self.table_current_requests, index)
 
-    def _table_completed_requests_double_clicked(self, index):
-        self.show_request('Просмотр задачи', self.table_accepted_requests, index)
+    def _table_accepted_requests_double_clicked(self, index):
+        self.show_request('Просмотр заявки', self.table_accepted_requests, index, save_button_enabled=False)
 
     def _btn_remove_accepted_request_clicked(self):
         self.remove_request(self.table_accepted_requests)
@@ -130,7 +134,7 @@ class ElectronicReceptionWidget(QtWidgets.QWidget):
                                          'substr(date_time, 12, 8)) ASC')
         model_current_requests.select()
 
-        self.table_current_requests = QtWidgets.QTableView()
+        self.table_current_requests = TableView()
         self.table_current_requests.setSelectionMode(QtWidgets.QTableView.SingleSelection)
         self.table_current_requests.setSelectionBehavior(QtWidgets.QTableView.SelectRows)
         self.table_current_requests.setEditTriggers(QtWidgets.QTableView.NoEditTriggers)
@@ -191,7 +195,7 @@ class ElectronicReceptionWidget(QtWidgets.QWidget):
                                           'substr(date_time, 12, 8)) ASC')
         model_accepted_requests.select()
 
-        self.table_accepted_requests = QtWidgets.QTableView()
+        self.table_accepted_requests = TableView()
         self.table_accepted_requests.setSelectionMode(QtWidgets.QTableView.SingleSelection)
         self.table_accepted_requests.setSelectionBehavior(QtWidgets.QTableView.SelectRows)
         self.table_accepted_requests.setEditTriggers(QtWidgets.QTableView.NoEditTriggers)
@@ -210,6 +214,8 @@ class ElectronicReceptionWidget(QtWidgets.QWidget):
         self.table_accepted_requests.setColumnHidden(column_status, True)
         self.table_accepted_requests.verticalHeader().setHidden(True)
         self.table_accepted_requests.horizontalHeader().setStretchLastSection(True)
+
+        self.table_accepted_requests.doubleClicked.connect(self._table_accepted_requests_double_clicked)
 
         layout_accepted_requests_buttons = QtWidgets.QHBoxLayout()
         layout_accepted_requests_buttons.setAlignment(QtCore.Qt.AlignLeft)

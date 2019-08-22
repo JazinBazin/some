@@ -11,7 +11,7 @@ class ColoredSqlTableModel(QtSql.QSqlTableModel):
             task_date_time = QtCore.QDateTime.fromString(index.model().data(date_time_index), 'dd-MM-yyyy HH:mm:ss')
             current_date_time = QtCore.QDateTime.currentDateTime()
             if current_date_time.daysTo(task_date_time) < 1:
-                return QtGui.QBrush(QtGui.QColor(255, 0, 0))
+                return QtGui.QBrush(QtGui.QColor(255, 55, 55))
             elif current_date_time.daysTo(task_date_time) < 2:
                 return QtGui.QBrush(QtGui.QColor(255, 255, 0))
             else:

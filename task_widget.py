@@ -27,7 +27,7 @@ class TaskWidget(QtWidgets.QDialog):
 
     def __init__(self, headline, date_init=QtCore.QDate.currentDate(),
                  time_init=QtCore.QTime.currentTime(), responsible_init='',
-                 description_init='', notes_init='', parent=None):
+                 description_init='', notes_init='', save_button_enabled=True, parent=None):
         super().__init__(parent)
         self.setWindowTitle(headline)
         self.setWindowIcon(QtGui.QIcon('logo_era.png'))
@@ -51,6 +51,7 @@ class TaskWidget(QtWidgets.QDialog):
         self.text_notes.setText(notes_init)
 
         btn_save_task = QtWidgets.QPushButton('Сохранить')
+        btn_save_task.setEnabled(save_button_enabled)
         btn_cancel_task = QtWidgets.QPushButton('Отмена')
 
         btn_save_task.clicked.connect(self._btn_save_task_clicked)

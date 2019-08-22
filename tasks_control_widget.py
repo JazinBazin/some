@@ -1,6 +1,7 @@
 from PyQt5 import QtWidgets, QtSql, QtCore
 from task_widget import TaskWidget
 from colored_sql_table_model import ColoredSqlTableModel
+from TableView import TableView
 
 
 class TasksControlWidget(QtWidgets.QWidget):
@@ -14,6 +15,7 @@ class TasksControlWidget(QtWidgets.QWidget):
                       description, notes):
         record = self.table_current_tasks.model().record()
         record.setValue('description', description)
+        period_time.setHMS(period_time.hour(), period_time.minute(), 0)
         date_time = QtCore.QDateTime(period_date, period_time)
         record.setValue('period', date_time.toString('dd-MM-yyyy HH:mm:ss'))
         record.setValue('responsible', responsible)
@@ -35,7 +37,7 @@ class TasksControlWidget(QtWidgets.QWidget):
     def _btn_remove_task_clicked(self):
         self.remove_task(self.table_current_tasks)
 
-    def show_task(self, headline, table, selected_cell):
+    def show_task(self, headline, table, selected_cell, save_button_enabled=True):
         description_index = table.model().createIndex(selected_cell.row(), 1)
         date_time_index = table.model().createIndex(selected_cell.row(), 2)
         responsible_index = table.model().createIndex(selected_cell.row(), 3)
@@ -48,8 +50,8 @@ class TasksControlWidget(QtWidgets.QWidget):
         responsible_init = table.model().data(responsible_index)
         notes_init = table.model().data(notes_index)
 
-        task_widget = TaskWidget(headline, date_time.date(), date_time.time(),
-                                 responsible_init, description_init, notes_init)
+        task_widget = TaskWidget(headline, date_time.date(), date_time.time(), responsible_init,
+                                 description_init, notes_init, save_button_enabled)
         task_widget.signal_save_task.connect(slot=self.slot_task_edit)
         task_widget.exec()
 
@@ -70,6 +72,7 @@ class TasksControlWidget(QtWidgets.QWidget):
         responsible_index = self.table_current_tasks.model().createIndex(selected_cell.row(), 3)
         notes_index = self.table_current_tasks.model().createIndex(selected_cell.row(), 4)
 
+        period_time.setHMS(period_time.hour(), period_time.minute(), 0)
         date_time = QtCore.QDateTime(period_date, period_time)
         self.table_current_tasks.model().setData(description_index, description)
         self.table_current_tasks.model().setData(date_time_index, date_time.toString('dd-MM-yyyy HH:mm:ss'))
@@ -93,7 +96,7 @@ class TasksControlWidget(QtWidgets.QWidget):
         self.show_task('Просмотр задачи', self.table_current_tasks, index)
 
     def _table_completed_tasks_double_clicked(self, index):
-        self.show_task('Просмотр задачи', self.table_completed_tasks, index)
+        self.show_task('Просмотр задачи', self.table_completed_tasks, index, save_button_enabled=False)
 
     def _btn_remove_completed_task_clicked(self):
         self.remove_task(self.table_completed_tasks)
@@ -105,10 +108,18 @@ class TasksControlWidget(QtWidgets.QWidget):
             self.table_completed_tasks.setRowHidden(row, True)
         self.table_completed_tasks.model().submitAll()
 
+    def update_current_tasks(self):
+        selected_cells = self.table_current_tasks.selectedIndexes()
+        selected_row = -1 if len(selected_cells) == 0 else selected_cells[0].row()
+        self.table_current_tasks.model().submitAll()
+        if selected_row != -1:
+            self.table_current_tasks.selectRow(selected_row)
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle('Контроль задач')
 
+        self.last_selected_current_task_row = -1
         column_id = 0
         column_status = 5
 
@@ -122,7 +133,7 @@ class TasksControlWidget(QtWidgets.QWidget):
                                       '|| "-" || substr(period, 1, 2) || " " || substr(period, 12, 8)) ASC')
         model_current_tasks.select()
 
-        self.table_current_tasks = QtWidgets.QTableView()
+        self.table_current_tasks = TableView()
         self.table_current_tasks.setSelectionMode(QtWidgets.QTableView.SingleSelection)
         self.table_current_tasks.setSelectionBehavior(QtWidgets.QTableView.SelectRows)
         self.table_current_tasks.setEditTriggers(QtWidgets.QTableView.NoEditTriggers)
@@ -179,7 +190,7 @@ class TasksControlWidget(QtWidgets.QWidget):
                                         '|| "-" || substr(period, 1, 2) || " " || substr(period, 12, 8)) DESC')
         model_completed_tasks.select()
 
-        self.table_completed_tasks = QtWidgets.QTableView()
+        self.table_completed_tasks = TableView()
         self.table_completed_tasks.setSelectionMode(QtWidgets.QTableView.SingleSelection)
         self.table_completed_tasks.setSelectionBehavior(QtWidgets.QTableView.SelectRows)
         self.table_completed_tasks.setModel(model_completed_tasks)
@@ -215,3 +226,8 @@ class TasksControlWidget(QtWidgets.QWidget):
         layout_main.addLayout(layout_completed_tasks)
 
         self.setLayout(layout_main)
+
+        self.timer_for_updates = QtCore.QTimer()
+        self.timer_for_updates.timeout.connect(self.update_current_tasks)
+        five_minutes = 1000 * 60 * 5
+        self.timer_for_updates.start(five_minutes)
