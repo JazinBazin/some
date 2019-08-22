@@ -140,6 +140,7 @@ class TasksControlWidget(QtWidgets.QWidget):
         self.table_current_tasks.setModel(model_current_tasks)
         self.table_current_tasks.horizontalHeader().setMinimumSectionSize(150)
         self.table_current_tasks.setColumnWidth(1, 400)
+        self.table_current_tasks.setColumnWidth(3, 180)
         self.table_current_tasks.setHorizontalScrollMode(QtWidgets.QTableView.ScrollPerPixel)
         self.table_current_tasks.setVerticalScrollMode(QtWidgets.QTableView.ScrollPerPixel)
 
@@ -147,7 +148,7 @@ class TasksControlWidget(QtWidgets.QWidget):
 
         model_current_tasks.setHeaderData(1, QtCore.Qt.Horizontal, "Задача")
         model_current_tasks.setHeaderData(2, QtCore.Qt.Horizontal, "Срок")
-        model_current_tasks.setHeaderData(3, QtCore.Qt.Horizontal, "Ответственный")
+        model_current_tasks.setHeaderData(3, QtCore.Qt.Horizontal, "Ответственный исполнитель")
         model_current_tasks.setHeaderData(4, QtCore.Qt.Horizontal, "Примечания")
         self.table_current_tasks.setColumnHidden(column_id, True)
         self.table_current_tasks.setColumnHidden(column_status, True)
@@ -197,6 +198,7 @@ class TasksControlWidget(QtWidgets.QWidget):
         self.table_completed_tasks.setEditTriggers(QtWidgets.QTableView.NoEditTriggers)
         self.table_completed_tasks.horizontalHeader().setMinimumSectionSize(150)
         self.table_completed_tasks.setColumnWidth(1, 400)
+        self.table_completed_tasks.setColumnWidth(3, 180)
         self.table_completed_tasks.horizontalHeader().setStretchLastSection(True)
         self.table_completed_tasks.verticalHeader().setHidden(True)
         self.table_completed_tasks.setHorizontalScrollMode(QtWidgets.QTableView.ScrollPerPixel)
@@ -206,7 +208,7 @@ class TasksControlWidget(QtWidgets.QWidget):
 
         model_completed_tasks.setHeaderData(1, QtCore.Qt.Horizontal, "Задача")
         model_completed_tasks.setHeaderData(2, QtCore.Qt.Horizontal, "Срок")
-        model_completed_tasks.setHeaderData(3, QtCore.Qt.Horizontal, "Ответственный")
+        model_completed_tasks.setHeaderData(3, QtCore.Qt.Horizontal, "Ответственный исполнитель")
         model_completed_tasks.setHeaderData(4, QtCore.Qt.Horizontal, "Примечания")
         self.table_completed_tasks.setColumnHidden(column_id, True)
         self.table_completed_tasks.setColumnHidden(column_status, True)

@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5 import QtWidgets, QtCore
 
 
 class DigitalClock(QtWidgets.QLCDNumber):
@@ -9,7 +9,7 @@ class DigitalClock(QtWidgets.QLCDNumber):
     def __init__(self, width, height, border_color, digits_color, parent=None):
         super().__init__(parent)
         self.setWindowTitle('Часы')
-        self.setMaximumSize(width, height)
+        self.setMinimumSize(width, height)
         self.setSegmentStyle(QtWidgets.QLCDNumber.Flat)
         palette = self.palette()
         palette.setColor(palette.Light, border_color)

@@ -142,7 +142,6 @@ class ElectronicReceptionWidget(QtWidgets.QWidget):
         self.table_current_requests.horizontalHeader().setMinimumSectionSize(150)
         self.table_current_requests.setHorizontalScrollMode(QtWidgets.QTableView.ScrollPerPixel)
         self.table_current_requests.setVerticalScrollMode(QtWidgets.QTableView.ScrollPerPixel)
-        self.table_current_requests.horizontalHeader().setMinimumSectionSize(150)
 
         model_current_requests.setHeaderData(1, QtCore.Qt.Horizontal, "Фамилия")
         model_current_requests.setHeaderData(2, QtCore.Qt.Horizontal, "Имя")
