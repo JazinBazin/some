@@ -1,6 +1,7 @@
 from PyQt5 import QtWidgets, QtSql, QtCore
 from task_widget import TaskWidget
-from colored_sql_table_model import ColoredSqlTableModel
+from current_tasks_sql_table_model import CurrentTasksSqlTableModel
+from completed_tasks_sql_table_model import CompletedTasksSqlTableModel
 from TableView import TableView
 
 
@@ -115,6 +116,16 @@ class TasksControlWidget(QtWidgets.QWidget):
         if selected_row != -1:
             self.table_current_tasks.selectRow(selected_row)
 
+    def table_current_tasks_change_sort_type(self):
+        if self.box_sort_type.currentIndex() == 0:
+            self.table_current_tasks.model().setFilter('status = "not completed" ORDER BY responsible')
+        else:
+            self.table_current_tasks.model().setFilter('status = "not completed" '
+                                                       'ORDER BY datetime(substr(period, 7, 4) || "-" || '
+                                                       'substr(period, 4, 2) || "-" || substr(period, 1, 2) || '
+                                                       '" " || substr(period, 12, 8)) ASC')
+        self.table_current_tasks.model().submitAll()
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle('Контроль задач')
@@ -125,12 +136,10 @@ class TasksControlWidget(QtWidgets.QWidget):
 
         lbl_current_tasks = QtWidgets.QLabel('Текущие задачи:')
 
-        model_current_tasks = ColoredSqlTableModel()
+        model_current_tasks = CurrentTasksSqlTableModel()
         model_current_tasks.setTable('Task')
         model_current_tasks.setEditStrategy(QtSql.QSqlTableModel.OnManualSubmit)
-        model_current_tasks.setFilter('status = "not completed" '
-                                      'ORDER BY datetime(substr(period, 7, 4) || "-" || substr(period, 4, 2) '
-                                      '|| "-" || substr(period, 1, 2) || " " || substr(period, 12, 8)) ASC')
+        model_current_tasks.setFilter('status = "not completed" ORDER BY responsible')
         model_current_tasks.select()
 
         self.table_current_tasks = TableView()
@@ -169,6 +178,13 @@ class TasksControlWidget(QtWidgets.QWidget):
         btn_remove_completed_task.clicked.connect(self._btn_remove_completed_task_clicked)
         btn_clear_completed_tasks.clicked.connect(self._btn_clear_completed_tasks_clicked)
 
+        lbl_sort_type = QtWidgets.QLabel('Тип сортировки:')
+        self.box_sort_type = QtWidgets.QComboBox()
+        self.box_sort_type.addItem('По исполнителю')
+        self.box_sort_type.addItem('По дате и времени')
+        self.box_sort_type.setCurrentIndex(0)
+        self.box_sort_type.currentIndexChanged.connect(self.table_current_tasks_change_sort_type)
+
         layout_current_tasks_buttons = QtWidgets.QHBoxLayout()
         layout_current_tasks_buttons.setAlignment(QtCore.Qt.AlignLeft)
         layout_current_tasks_buttons.addWidget(lbl_current_tasks)
@@ -176,6 +192,8 @@ class TasksControlWidget(QtWidgets.QWidget):
         layout_current_tasks_buttons.addWidget(btn_remove_task)
         layout_current_tasks_buttons.addWidget(btn_edit_task)
         layout_current_tasks_buttons.addWidget(btn_complete_task)
+        layout_current_tasks_buttons.addWidget(lbl_sort_type)
+        layout_current_tasks_buttons.addWidget(self.box_sort_type)
 
         layout_current_tasks = QtWidgets.QVBoxLayout()
         layout_current_tasks.addLayout(layout_current_tasks_buttons)
@@ -183,7 +201,7 @@ class TasksControlWidget(QtWidgets.QWidget):
 
         lbl_completed_tasks = QtWidgets.QLabel('Выполненные задачи:')
 
-        model_completed_tasks = QtSql.QSqlTableModel()
+        model_completed_tasks = CompletedTasksSqlTableModel()
         model_completed_tasks.setTable('Task')
         model_completed_tasks.setEditStrategy(QtSql.QSqlTableModel.OnManualSubmit)
         model_completed_tasks.setFilter('status = "completed" '

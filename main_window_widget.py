@@ -1,6 +1,7 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from electronic_reception_widget import ElectronicReceptionWidget
 from tasks_control_widget import TasksControlWidget
+from events_widget import EventsWidget
 from digital_clock import DigitalClock
 
 
@@ -34,10 +35,12 @@ class MainWindowWidget(QtWidgets.QWidget):
 
         electronic_reception = ElectronicReceptionWidget()
         tasks_control = TasksControlWidget()
+        events_widget = EventsWidget()
 
         tabs = QtWidgets.QTabWidget()
         tabs.addTab(electronic_reception, 'Электронная приёмная')
         tabs.addTab(tasks_control, 'Контроль задач')
+        tabs.addTab(events_widget, 'Мероприятия')
 
         lbl_logo_era = QtWidgets.QLabel()
         logo = QtGui.QPixmap('logo_era_full.png')

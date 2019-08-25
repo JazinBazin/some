@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtSql, QtGui
 
 
-class ColoredSqlTableModel(QtSql.QSqlTableModel):
+class CurrentTasksSqlTableModel(QtSql.QSqlTableModel):
     def __init__(self, parent=None):
         super().__init__(parent)
 
