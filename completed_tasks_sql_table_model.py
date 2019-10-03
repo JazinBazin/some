@@ -7,6 +7,6 @@ class CompletedTasksSqlTableModel(QtSql.QSqlTableModel):
 
     def data(self, index, role=QtCore.Qt.DisplayRole):
         if role == QtCore.Qt.BackgroundRole:
-            return QtGui.QBrush(QtGui.QColor(0, 255, 0))
+            return QtGui.QBrush(QtGui.QColor(13, 194, 67))
         else:
             return super().data(index, role)

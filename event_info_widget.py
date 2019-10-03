@@ -27,7 +27,7 @@ class EventInfoWidget(QtWidgets.QDialog):
                  save_button_enabled=True, parent=None):
         super().__init__(parent)
         self.setWindowTitle(headline)
-        self.setWindowIcon(QtGui.QIcon('logo_era.png'))
+        self.setWindowIcon(QtGui.QIcon('images/logo_era.png'))
         self.setWindowFlags(self.windowFlags() & (~QtCore.Qt.WindowContextHelpButtonHint))
 
         lbl_event_name = QtWidgets.QLabel('Мероприятие:')

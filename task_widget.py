@@ -30,7 +30,7 @@ class TaskWidget(QtWidgets.QDialog):
                  description_init='', notes_init='', save_button_enabled=True, parent=None):
         super().__init__(parent)
         self.setWindowTitle(headline)
-        self.setWindowIcon(QtGui.QIcon('logo_era.png'))
+        self.setWindowIcon(QtGui.QIcon('images/logo_era.png'))
         self.setWindowFlags(self.windowFlags() & (~QtCore.Qt.WindowContextHelpButtonHint))
 
         lbl_period_date = QtWidgets.QLabel('Дата:')

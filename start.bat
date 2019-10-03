@@ -1,0 +1,1 @@
+START /MIN "" "C:\Users\operator_03\Documents\ERA\era.bat"
